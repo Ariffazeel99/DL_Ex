@@ -6,10 +6,10 @@ from matplotlib import pyplot as plt
 class Checker(object):
     def __init__(self, resolution, tile_size):
         if not isinstance(tile_size, int):
-            raise ValueError("tile_size must be an integar")
+            raise ValueError("tile_size must be an integer")
         if not isinstance(resolution, int):
-            raise ValueError("resolution must be an integar")
-        if (resolution % (2 * tile_size)):
+            raise ValueError("resolution must be an integer")
+        if resolution % (2 * tile_size):
             raise ValueError("resolution must be divisible by 2*tile_size")
 
         self.tile_size = tile_size
