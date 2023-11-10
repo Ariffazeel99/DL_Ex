@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
 import tabulate
-import argparse
 
 ID = 0  # identifier for dispatcher
 
@@ -21,8 +20,7 @@ class TestCheckers(unittest.TestCase):
         import pattern
         c = pattern.Checker(250, 25)
         c.draw()
-        np.testing.assert_almost_equal(c.output, self.reference_img, err_msg="Check if your pattern starts with a"
-                                                                             "black tile in the upper left corner.")
+        np.testing.assert_almost_equal(c.output, self.reference_img)
 
     def testPatternDifferentSize(self):
         # Creates a checkerboard pattern with resolution 100x100
@@ -31,8 +29,7 @@ class TestCheckers(unittest.TestCase):
         import pattern
         c = pattern.Checker(100, 25)
         c.draw()
-        np.testing.assert_almost_equal(c.output, self.reference_img2, err_msg="Check if your pattern starts with a"
-                                                                              "black tile in the upper left corner.")
+        np.testing.assert_almost_equal(c.output, self.reference_img2)
 
     def testReturnCopy(self):
         # Checks whether the output of the pattern is a copy of the output object rather than the output object itself.
@@ -69,13 +66,7 @@ class TestCircle(unittest.TestCase):
         c = pattern.Circle(1024, 200, (512, 256))
         circ = c.draw()
         iou = self._IoU(circ, self.reference_img)
-        self.assertAlmostEqual(iou, 1.0, 2, msg="Possible errors: "
-                                                "1. np.meshgrid creates meshgrid similar to a "
-                                                "coordinate system. In x direction the values rise from left"
-                                                "to right and in y direction the values rise from top to bottom"
-                                                "(NOT bottom to top)."
-                                                "\n 2. The desired output is a boolean array and not a binary "
-                                                "array.")
+        self.assertAlmostEqual(iou, 1.0, 2)
 
     def testPatternDifferentSize(self):
         # Creates an image of a circle with resolution 512x512 a radius of 20 with a center at
@@ -84,13 +75,7 @@ class TestCircle(unittest.TestCase):
         c = pattern.Circle(512, 20, (50, 50))
         circ = c.draw()
         iou = self._IoU(circ, self.reference_img2)
-        self.assertAlmostEqual(iou, 1.0, 1, msg="Possible errors: "
-                                                "1. np.meshgrid creates meshgrid similar to a "
-                                                "coordinate system. In x direction the values rise from left "
-                                                "to right and in y direction the values rise from top to bottom"
-                                                "(NOT bottom to top)."
-                                                "\n 2. The desired output is a boolean array and not a binary "
-                                                "array.")
+        self.assertAlmostEqual(iou, 1.0, 1)
 
     def testReturnCopy(self):
         # Checks whether the output of the pattern is a copy of the output object rather than the output object itself.
@@ -125,27 +110,14 @@ class TestSpectrum(unittest.TestCase):
         import pattern
         s = pattern.Spectrum(255)
         spec = s.draw()
-        np.testing.assert_almost_equal(spec,
-                                       self.reference_img,
-                                       decimal=2,
-                                       err_msg="Have a close look at corners of the spectrum in the Description.pdf "
-                                           "file: Which colors are the strongest in which corners? Try to create"
-                                           " one channel first and then the others based on that one. It is useful"
-                                           " to use np.meshgrid here again.")
+        np.testing.assert_almost_equal(spec, self.reference_img, decimal=2)
 
     def testPatternDifferentSize(self):
         # Creates an RGB spectrum with resolution 100x100x3 and compares it to the reference image
         import pattern
         s = pattern.Spectrum(100)
         spec = s.draw()
-        np.testing.assert_almost_equal(spec,
-                                       self.reference_img2,
-                                       decimal=2,
-                                       err_msg="Have a close look at corners of the spectrum in the Description.pdf "
-                                           "file: Which colors are the strongest in which corners? Try to create"
-                                           " one channel first and then the others based on that one. It is useful"
-                                           " to use np.meshgrid here again.")
-
+        np.testing.assert_almost_equal(spec, self.reference_img2, decimal=2)
 
     def testReturnCopy(self):
         # Checks whether the output of the pattern is a copy of the
@@ -177,10 +149,8 @@ class TestGen(unittest.TestCase):
                              shuffle=False)
         gen2 = ImageGenerator(self.file_path, self.label_path, 12, [32, 32, 3], rotation=False, mirroring=False,
                               shuffle=False)
-        np.testing.assert_almost_equal(gen.next()[0], gen2.next()[0], err_msg="Possible error: Maybe the data is already "
-                                                                      "shuffled during initialization.")
-        np.testing.assert_almost_equal(gen.next()[1], gen2.next()[1], err_msg="Possible error: Maybe the lables are already "
-                                                                      "shuffled during initialization.")
+        np.testing.assert_almost_equal(gen.next()[0], gen2.next()[0])
+        np.testing.assert_almost_equal(gen.next()[1], gen2.next()[1])
 
     def testDuplicate(self):
         # Image Generator without overlapping batches.
@@ -193,16 +163,8 @@ class TestGen(unittest.TestCase):
         sample_index = np.random.choice(np.arange(50))
         sample = b1[0][sample_index]
         b1_without_sample = np.delete(b1[0], sample_index, axis=0)
-        self.assertFalse(np.any(np.all(sample == b1_without_sample,
-                         axis=(1, 2, 3))),
-                         msg="Possible error: One or more samples appear more than once in the first batch (even for non-"
-                         "overlapping batches. Please make sure that all samples are unique within the batch.")
-        self.assertFalse(np.any(np.all(sample == b2[0],
-                         axis=(1, 2, 3))),
-                         msg="Possible error: One or more samples appear more than once in the following batches"
-                         "(even for non-overlapping batches. Please make sure that all samples are unique within "
-                         "the batch."
-                         )
+        self.assertFalse(np.any(np.all(sample == b1_without_sample, axis=(1, 2, 3))))
+        self.assertFalse(np.any(np.all(sample == b2[0], axis=(1, 2, 3))))
 
     def testResetIndex(self):
         # Data contains 100 image samples, for a batchsize of example 60 an
@@ -219,12 +181,8 @@ class TestGen(unittest.TestCase):
         np.testing.assert_almost_equal(b1[:20], b2[40:])
         b1 = gen2.next()[0]
         b2 = gen2.next()[0]
-        np.testing.assert_almost_equal(b1[:66], b2[17:], err_msg= "Possible error: The generator does not reuse the first "
-                                                         "elements of the first batch in case of overlapping batches"
-                                                         ". Please make sure to reuse the first elements in the first"
-                                                         "batch.")
-        self.assertFalse(b1[65] is b2[-1], msg="Possible error: The overlapping elements point to the same object. Please"
-                                           "make sure that the elements are copied. ")  # Check if it is a shared object
+        np.testing.assert_almost_equal(b1[:66], b2[17:])
+        self.assertFalse(b1[65] is b2[-1])  # Check if it is a shared object
 
     def testShuffle(self):
         # Creates two image generator objects.
@@ -234,49 +192,30 @@ class TestGen(unittest.TestCase):
                              shuffle=True)
         gen2 = ImageGenerator(self.file_path, self.label_path, 10, [32, 32, 3], rotation=False, mirroring=False,
                               shuffle=False)
-        np.testing.assert_raises(AssertionError,
-                                 np.testing.assert_array_equal,
-                                 gen.next()[0],
-                                 gen2.next()[0],
-                                 err_msg="Possible error: The data is not shuffled properly. Please make sure the images"
-                                         " are shuffled if the shuffle flag is set.")
-        np.testing.assert_raises(AssertionError,
-                                 np.testing.assert_array_equal,
-                                 gen.next()[1],
-                                 gen2.next()[1],
-                                 err_msg="Possible error: The labels are not shuffled properly together with the images."
-                                         " Please make sure the labels are also shuffled if the shuffle flag is set."
-                                 )
+        np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, gen.next()[0], gen2.next()[0])
+        np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, gen.next()[1], gen2.next()[1])
 
     def testShuffleEpoch(self):
         # Checks for shuffling of complete data set, not only inside batch after one epoch
-        # Detects if the same images (or rather pixel values) are included in the same batch
+        # Detects if the same images (or rather ixel values) are included in the same batch
         from generator import ImageGenerator
         gen = ImageGenerator(self.file_path, self.label_path, 50, [32, 32, 3], rotation=False, mirroring=False,
                              shuffle=True)
         b1_epoch0 = gen.next()[0]
         gen.next()
         b1_epoch1 = gen.next()[0]
-        self.assertFalse(np.all(np.sort(b1_epoch0, axis=None) == np.sort(b1_epoch1, axis=None)),
-                         msg="Possible error: The complete dataset is not shuffled after one epoch. Please make sure"
-                             "to shuffle the whole dataset after one epoch (not only within the batches).")
+        self.assertFalse(np.all(np.sort(b1_epoch0, axis=None) == np.sort(b1_epoch1, axis=None)))
 
     def testEpoch(self):
         from generator import ImageGenerator
         gen = ImageGenerator(self.file_path, self.label_path, 50, [32, 32, 3], rotation=False, mirroring=False,
                              shuffle=True)
         gen.next()
-        self.assertEqual(0, gen.current_epoch(), msg="Possible error: The counter for the current epoch does not work."
-                                                     " Please make sure to increase the epoch count by one after each "
-                                                     "epoch.")
+        self.assertEqual(0, gen.current_epoch())
         gen.next()
-        self.assertEqual(0, gen.current_epoch(), msg="Possible error: The counter for the current epoch does not work."
-                                                     " Please make sure to increase the epoch count by one after each "
-                                                     "epoch.")
+        self.assertEqual(0, gen.current_epoch())
         gen.next()
-        self.assertEqual(1, gen.current_epoch(), msg="Possible error: The counter for the current epoch does not work."
-                                                     " Please make sure to increase the epoch count by one after each "
-                                                     "epoch.")
+        self.assertEqual(1, gen.current_epoch())
 
     def testRotation(self):
         from generator import ImageGenerator
@@ -303,18 +242,8 @@ class TestGen(unittest.TestCase):
 
         # assumption is that augmented images are either rotated by 90 (rot1), 180 (ro2) or 270 (rot3) degrees, thus
         # their elementwise product must be zero
-        np.testing.assert_raises(AssertionError,
-                                 np.testing.assert_array_equal,
-                                 batch1,
-                                 batch2,
-                                 err_msg="Possible error: The images are not rotated if the rotation flag is set."
-                                         "Please make sure the images are rotated randomly if the rotatiosn flag "
-                                         "is set.")
-        np.testing.assert_almost_equal(np.sum(rot1 * rot2 * rot3),
-                                       0,
-                                       err_msg="Possible error: The rotation transformation is not properly done. "
-                                               "Please make sure the images are randomly rotated "
-                                               "90, 180 or 270 degrees.")
+        np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, batch1, batch2)
+        np.testing.assert_almost_equal(np.sum(rot1 * rot2 * rot3), 0)
 
     def testMirroring(self):
         from generator import ImageGenerator
@@ -352,30 +281,15 @@ class TestGen(unittest.TestCase):
 
         # the elementwise product of horizontal and vertical must be zero
         # since the images can only be augmented with vertical or horizontal mirroring
-        np.testing.assert_raises(AssertionError,
-                                 np.testing.assert_array_equal,
-                                 batch1,
-                                 batch2,
-                                 err_msg="Possible error: The images are not rotated if the rotation flag is set."
-                                         "Please make sure the images are rotated randomly if the rotatiosn flag "
-                                         "is set."
-                                 )
-        np.testing.assert_almost_equal(np.sum(vertical * horizontal * horizontal_vertical),
-                                       0,
-                                       err_msg="Possible error: The mirroring transformation is not properly done. "
-                                               "Please make sure the images are mirrored randomly. Possible mirroring"
-                                               " transformations:"
-                                               " horizontally, vertically or both."
-                                       )
+        np.testing.assert_raises(AssertionError, np.testing.assert_array_equal, batch1, batch2)
+        np.testing.assert_almost_equal(np.sum(vertical * horizontal * horizontal_vertical), 0)
 
     def testResize(self):
         from generator import ImageGenerator
 
         batch = ImageGenerator(self.file_path, self.label_path, 12, [50, 50, 3], rotation=False, mirroring=False,
                                shuffle=False).next()[0]
-
-        self.assertEqual(batch.shape, (12, 50, 50, 3),
-                         "testResize: you need to resize the input image to the given size")
+        self.assertEqual(batch.shape, (12, 50, 50, 3))
 
     def testLabels(self):
         # this test makes sure your generator returns integers as labels and not any strings or floating point values
@@ -384,41 +298,8 @@ class TestGen(unittest.TestCase):
         label = ImageGenerator(self.file_path, self.label_path, 12, [50, 50, 3], rotation=False, mirroring=False,
                                shuffle=False).next()[1]
 
-        self.assertFalse(isinstance(label[0], str),
-                         msg="Possible error: The generator does not return integer labels. Please make sure to cast "
-                             "your labels to integers."
-                         )
-        self.assertTrue(np.issubdtype(np.array(label).dtype, np.integer),
-                        msg="Possible error: The generator does not return integer labels. Please make sure to cast "
-                            "your labels to integers.")
-
-    # def testLabelNames(self):
-    #     # this test check whether the labels are correct corresponding to the data
-    #     from generator import ImageGenerator
-    #     images, labels = ImageGenerator(self.file_path, self.label_path, 5, [32, 32, 3], rotation=False,
-    #                                     mirroring=False,
-    #                                     shuffle=False).next()
-    #     images_means = np.round(np.mean(images, axis=(1, 2, 3)), decimals=4)
-    #     with open("test_data.npy", "rb") as f:
-    #         test_means, test_labels = np.load(f)
-    #     labels_pick = []
-    #     for i in images_means:
-    #         labels_pick.append(test_labels[np.where(test_means == i)])
-    #     self.assertEqual(labels, labels_pick, "Possible reason: Wrong labels are assigned to the data!")
-    #
-    # def testLabelNamesShuffle(self):
-    #     # this test check whether the labels are correct corresponding to the data
-    #     from generator import ImageGenerator
-    #     images, labels = ImageGenerator(self.file_path, self.label_path, 5, [32, 32, 3], rotation=False,
-    #                                     mirroring=False,
-    #                                     shuffle=True).next()
-    #     images_means = np.round(np.mean(images, axis=(1, 2, 3)), decimals=4)
-    #     with open("test_data.npy", "rb") as f:
-    #         test_means, test_labels = np.load(f)
-    #     labels_pick = []
-    #     for i in images_means:
-    #         labels_pick.append(test_labels[np.where(test_means == i)])
-    #     self.assertEqual(labels, labels_pick, "Possible reason: Wrong labels are assigned to the data!")
+        self.assertFalse(isinstance(label[0], str))
+        self.assertTrue(np.issubdtype(np.array(label).dtype, np.integer))
 
 
 if __name__ == '__main__':
@@ -454,4 +335,4 @@ if __name__ == '__main__':
                                 headers=['Pos', 'Test', "Result", 'Percent in Exercise', 'Percent in Exam'],
                                 tablefmt="github"))
     else:
-        unittest.main(exit=False)
+        unittest.main()

@@ -18,4 +18,4 @@ if __name__ == "__main__":
     ig = ImageGenerator(r"C:\Users\Ayesha Siddiqui\DL_Ex\exercise0_material\src\data\exercise_data",
                         r"C:\Users\Ayesha Siddiqui\DL_Ex\exercise0_material\src\data\Labels.json", 10, [200, 200, 3],
                         shuffle=True, rotation=True, mirroring=True)
-    ig.show(headless=False)
+    ig.show(headless=True)
